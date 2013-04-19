@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="d3.v3.js"></script>
+    <script type="text/javascript" src="jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="intergerSplitFunc.js"></script>
+    <style>
+      #chart {
+        border: solid 1px;
+        width: 340px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    min: <input id='min' value='245'></input>
+    max: <input id='max' value='3243'></input>
+    splits: <input id='splits' value='7'></input>
+    <button id='b'>refresh</button>
+    <button id='dynamic'>dynamic split</button>
+    <div id="chart"></div>
+    <script>
+var SimpleLine = function (config) {
+  this.config = config;
+  //  4 params must need
+  var width = config.width || 320,
+      height = config.height || 190;
+  var container = typeof config.container === "string" ? document.getElementById(config.container) : config.container; // id or dom node
+  var max = config.max;
+  var min = config.min;
+  var splits = config.splits || 7;
+  var dynamic = config.dynamic || false;
+
+  //  other optional params 
+  var margin = config.margin || {
+        "top": 1,
+        "left": 1,
+        "bottom": 1,
+        "right": 1
+      };
+  var color = config.color || {"old": "#e25a26", "new": "#337b00"};
+
+  var w = width - margin.left - margin.right;
+  var h = height - margin.top - margin.bottom;
+  
+  // data process;
+  if (dynamic) {
+    var splitResult = getDynamicSplit(min, max, splits);
+    var b = splitResult.range;
+    var newMin = b[0];
+    var newMax = b[1];
+    var ticks = splitResult.rangeTicks;
+    var splits = splitResult.splitNumber;
+  } else {
+    var b = getRangeBound(min, max, splits);
+    var newMin = b[0];
+    var newMax = b[1];
+    var ticks = getRangeTicks(min, max, splits);
+  }
+
+  var svg = d3.select(container).append("svg:svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  var hLine = svg.append("g").selectAll(".hLine")
+      .data(d3.range(splits + 1))
+    .enter().append("g")
+      .attr("class", "hLine");
+
+  //h line
+  hLine.append("line")
+      .attr("stroke", "gray")
+      .attr("stroke-width", 0.6)
+      .attr("x1", margin.left)
+      .attr("y1", function (d, i) { return margin.top + (1 - i / splits) * h; })
+      .attr("x2", margin.left + w)
+      .attr("y2", function (d, i) { return margin.top + (1 - i / splits) * h; });
+
+  //h line text
+  hLine.append("text")
+      .attr("x", margin.left)
+      .attr("y", function (d, i) { return margin.top + (1 - i / splits) * h + 13; })
+      .attr("font-family", "微软雅黑")
+      .attr("font-size", "12px")
+      .attr("fill", "#bbb")
+      .text(function (d, i) {
+          //return newMin + i * splitValue;
+          return ticks[i];
+      });
+
+  // simple line
+  svg.append("line")
+      .attr("stroke", "green")
+      .attr("stroke-width", 0.6)
+      .attr("x1", margin.left + w * 0.2)
+      .attr("y1", function (d, i) { return margin.top + (1 - (max - newMin) / (newMax - newMin)) * h; })
+      .attr("x2", margin.left + w - w * 0.2)
+      .attr("y2", function (d, i) { return margin.top + (1 - (min - newMin) / (newMax - newMin)) * h; });
+};
+
+var refresh = function (dynamic) {
+  var min = parseFloat($("#min")[0].value);
+  var max = parseFloat($("#max")[0].value);
+  var splits = parseFloat($("#splits")[0].value);
+  $("#chart").html('');
+
+  var l = new SimpleLine({
+      container: "chart",
+      width: 340,
+      height: 200,
+      dynamic: dynamic,
+      min: min,
+      max: max,
+      splits: splits,
+      margin: {
+        top: 11,
+        bottom: 21,
+        left: 15,
+        right: 15 
+      }
+  });
+};
+
+$("#b").click(function () {
+  refresh(false);
+});
+$("#dynamic").click(function () {
+  refresh(true);
+});
+
+$("#b").trigger("click");
+
+    </script>
+
+</body></html>
