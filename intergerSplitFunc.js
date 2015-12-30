@@ -1,4 +1,4 @@
-/* get interger range bound */
+/* get integer range bound */
 var getRangeBound = function (min, max, splitNumber) {
   var temp1 = min;
   var temp2 = max;
@@ -62,7 +62,7 @@ var getRangeBound = function (min, max, splitNumber) {
   return range;
 };
 
-/* get interger range ticks */
+/* get integer range ticks */
 var getRangeTicks = function (min, max, splits) {
   var b = getRangeBound(min, max, splits);
   var splitValue = (b[1] - b[0]) / splits;
