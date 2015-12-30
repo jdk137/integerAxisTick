@@ -1,8 +1,8 @@
-intergerAxisTick
+integerAxisTick
 ================
 
-坐标轴标签取成整数的算法。 Algorithm to get interger axis tick .
+坐标轴标签取成整数的算法。 Algorithm to get integer axis tick .
 
-Algorithm code is in intergerSplitFunc.js .
+Algorithm code is in integerSplitFunc.js .
 
-[demo link](http://jsfiddle.net/jdk137/CkEtr/)
+
